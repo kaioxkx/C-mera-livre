@@ -216,3 +216,31 @@ RunService:BindToRenderStep("FreeCamCinema", 301, function(dt)
 
 	cam.CFrame = cf + vel
 end)
+-- =============================
+-- RESTAURA WALK/JUMP APÓS RESPAWN
+-- =============================
+
+local defaultWalkSpeed = 16 -- valor padrão do Roblox
+local defaultJumpPower = 50 -- valor padrão do Roblox
+
+-- Função para restaurar humanoide
+local function restoreHumanoid(char)
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	if hum then
+		-- Se não estiver em FreeCam, restaura normalmente
+		if not freecam then
+			hum.WalkSpeed = defaultWalkSpeed
+			hum.JumpPower = defaultJumpPower
+		end
+
+		-- Quando morrer, garante reset
+		hum.Died:Connect(function()
+			resetCam()
+		end)
+	end
+end
+
+-- Quando o personagem spawna
+player.CharacterAdded:Connect(function(char)
+	restoreHumanoid(char)
+end)
