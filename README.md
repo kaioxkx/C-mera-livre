@@ -161,10 +161,7 @@ btn.MouseButton1Click:Connect(function()
 		yaw = math.atan2(-look.X, -look.Z)
 		pitch = math.asin(look.Y)
 		cam.CameraType = Enum.CameraType.Scriptable
-		if humanoid then
-			humanoid.WalkSpeed = 0
-			humanoid.JumpPower = 0
-		end
+		-- REMOVIDO: não trava mais o personagem
 	else
 		resetCam()
 	end
@@ -188,10 +185,10 @@ RunService:BindToRenderStep("FreeCamCinema", 301, function(dt)
 	-- ROTACAO
 	if allowRotate or not isMobile then
 		local delta = UIS:GetMouseDelta()
-		-- aumenta a velocidade e mantém inércia realista
+		-- velocidade maior e inércia suave
 		rotVel = rotVel:Lerp(Vector2.new(-delta.Y, -delta.X) * 0.6, 0.25)
 	else
-		-- desacelera suavemente até zero, tipo efeito cinema
+		-- desaceleração suave tipo cinema
 		rotVel = rotVel:Lerp(Vector2.zero, 0.1)
 	end
 
@@ -215,32 +212,4 @@ RunService:BindToRenderStep("FreeCamCinema", 301, function(dt)
 	vel *= 0.9
 
 	cam.CFrame = cf + vel
-end)
--- =============================
--- RESTAURA WALK/JUMP APÓS RESPAWN
--- =============================
-
-local defaultWalkSpeed = 16 -- valor padrão do Roblox
-local defaultJumpPower = 50 -- valor padrão do Roblox
-
--- Função para restaurar humanoide
-local function restoreHumanoid(char)
-	local hum = char:FindFirstChildOfClass("Humanoid")
-	if hum then
-		-- Se não estiver em FreeCam, restaura normalmente
-		if not freecam then
-			hum.WalkSpeed = defaultWalkSpeed
-			hum.JumpPower = defaultJumpPower
-		end
-
-		-- Quando morrer, garante reset
-		hum.Died:Connect(function()
-			resetCam()
-		end)
-	end
-end
-
--- Quando o personagem spawna
-player.CharacterAdded:Connect(function(char)
-	restoreHumanoid(char)
 end)
